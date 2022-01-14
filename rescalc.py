@@ -132,7 +132,7 @@ class ResCal():
     self.source_pos = newPos.copy()
     self.update_cal()
     self.update_diff()
-    print("Updated source pos {}".format(self.source_pos))
+    print("Updated source pos. Current value: {}".format(self.source_pos))
 
   def get_res_inner(self):
     return self.res_inner
