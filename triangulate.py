@@ -14,20 +14,28 @@ rc = ResCal("FATIMA_pos.txt", "FATIMA_intensities.txt")
 
 def update_X (val):
   xpos.set(val)
-  rc.update([xpos.get(), ypos.get(), zpos.get()])
+  update()
   #window.update()
 def update_Y (val):
   ypos.set(val)
-  rc.update([xpos.get(), ypos.get(), zpos.get()])
+  update()
   #window.update()
 def update_Z (val):
   zpos.set(val)
+  update()
+
+
+def update():
   rc.update([xpos.get(), ypos.get(), zpos.get()])
-  #window.update()
+  display1.update(rc.get_res_inner())
+  display2.update(rc.get_res_outer())
+  window.update()
+
 def reset():
   update_X(0)
   update_Y(0)
   update_Z(0)
+  update()
   scl_Xvalue.set(0)
   scl_Yvalue.set(0)
   scl_Zvalue.set(0)
@@ -38,7 +46,9 @@ main_display = tk.Frame(window, width=500)
 main_gui.grid(row=0,column=0)
 main_display.grid(row=0,column=1)
 
+title1 = tk.Label(main_display, text="Inner ring")
 display1 = ResDisplay(main_display, 6)
+title2 = tk.Label(main_display, text="Outer ring")
 display2 = ResDisplay(main_display, 12)
 btn_reset_pos = tk.Button(main_gui, text="RESET", command=reset)
 lbl_Sliders = tk.Label(main_gui,
@@ -83,8 +93,10 @@ lbl_Xval.grid(row=1, column=2)
 lbl_Yval.grid(row=2, column=2)
 lbl_Zval.grid(row=3, column=2)
 btn_reset_pos.grid(row=4, column=1)
-display1.grid(row=0, column=1)
-display2.grid(row=1, column=1)
+title1.grid(padx=(20,0),sticky=tk.W, row=0, column=1)
+display1.grid(padx=(20,0),row=1, column=1)
+title2.grid(padx=(20,0),sticky=tk.W, row=2, column=1)
+display2.grid(padx=(20,0),row=3, column=1)
 
 #btn_increment.bind("<Button-1>", increment_lbl)
 

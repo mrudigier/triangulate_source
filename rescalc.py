@@ -117,9 +117,16 @@ class ResCal():
   def update_diff(self):
     self.res_inner.clear()
     for i,x in enumerate(self.cal_ratio_inner):
-      self.res_inner.append(self.cal_ratio_inner[i] - self.ref_ratio_inner[i])
+      if (self.cal_ratio_inner[i] < 0 or self.ref_ratio_inner[i] < 0):
+        self.res_inner.append(0)
+      else:
+        self.res_inner.append(self.cal_ratio_inner[i] - self.ref_ratio_inner[i])
+    self.res_outer.clear()
     for i,x in enumerate(self.cal_ratio_outer):
-      self.res_outer.append(self.cal_ratio_outer[i] - self.ref_ratio_outer[i])
+      if (self.cal_ratio_outer[i] < 0 or self.ref_ratio_outer[i] < 0):
+        self.res_outer.append(0)
+      else:
+        self.res_outer.append(self.cal_ratio_outer[i] - self.ref_ratio_outer[i])
 
   def update (self, newPos:TypeCoordinate):
     self.source_pos = newPos.copy()
@@ -127,8 +134,10 @@ class ResCal():
     self.update_diff()
     print("Updated source pos {}".format(self.source_pos))
 
-  def get_res(self):
-    return self.res_inner, self.res_outer
+  def get_res_inner(self):
+    return self.res_inner
+  def get_res_outer(self):
+    return self.res_outer
 
   def cal_distance(self, sourcepos:TypeCoordinate, detpos:TypeCoordinate) -> float:
     xsqr = (sourcepos[0] - detpos[0])**2
