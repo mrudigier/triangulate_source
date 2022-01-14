@@ -3,7 +3,7 @@ from resdisplay import ResDisplay
 from rescalc import ResCal
 
 window = tk.Tk()
-window.geometry("800x600")
+window.geometry("900x700")
 
 xpos = tk.DoubleVar()
 ypos = tk.DoubleVar()

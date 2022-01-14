@@ -1,4 +1,8 @@
 import tkinter as tk
+from typing import List, Tuple
+
+TypeVector = List[float]
+TypeCoordinate = Tuple[float,float,float]
 
 class ResDisplay(tk.Frame):
   """Displays the residual between two values for a given number

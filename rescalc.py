@@ -93,10 +93,10 @@ class ResCal():
 
     outer_array.clear()
     for i in range(0,12):
-      if i < 5:
-        j = 31 + i
+      if i < 6:
+        j = 30 + i
       else:
-        j = 19 + i
+        j = 18 + i
       if (int_array[i]!=0 and int_array[j]!=0):
         outer_array.append(int_array[i]/int_array[j])
       else:
