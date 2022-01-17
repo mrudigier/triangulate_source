@@ -25,12 +25,11 @@ def update_Z (val):
   zpos.set(float(val))
   update()
 
-
 def update():
   # first calculate the new intensity and ratio values
   rc.update([xpos.get(), ypos.get(), zpos.get()])
   # update the bar displays
-  display1.update(rc.get_res_inner())
+  display1.update(rc.get_tof_inner())
   display2.update(rc.get_res_outer())
   # update the rms display
   rmsdisplay.update_labels(rc.get_rms(), xpos.get(), ypos.get(), zpos.get())
@@ -75,9 +74,9 @@ title2 = tk.Label(main_display, text="Outer ring")
 display2 = ResDisplay(main_display, 12)
 rmsdisplay = RmsDisplay(main_display)
 btn_reset_pos = tk.Button(main_gui, text="RESET", command=reset, width = 14)
-btn_load_ref = tk.Button(main_gui, text="LOAD REF.", command=load_ref, width = 14)
-ent_load_ref = tk.Entry(main_gui, width = 30)
-btn_load_best = tk.Button(main_gui, text="LOAD BEST", command = load_best, width = 14)
+#btn_load_ref = tk.Button(main_gui, text="LOAD REF.", command=load_ref, width = 14)
+#ent_load_ref = tk.Entry(main_gui, width = 30)
+#btn_load_best = tk.Button(main_gui, text="LOAD BEST", command = load_best, width = 14)
 lbl_Sliders = tk.Label(main_gui,
                        text="Source position")
 lbl_Xlbl = tk.Label(main_gui, text="Xpos")
@@ -124,10 +123,10 @@ lbl_Yval.grid(row=2, column=2)
 lbl_Zval.grid(row=3, column=2)
 btn_reset_pos.grid(row=4, column=1)
 btn_load_best.grid(row=5, column=1)
-btn_load_ref.grid(pady=(30,0), row=6, column=1)
-ent_load_ref.grid(row=7, column=1)
-ent_load_ref.delete(0, 'end')
-ent_load_ref.insert(0, reffile)
+#btn_load_ref.grid(pady=(30,0), row=6, column=1)
+#ent_load_ref.grid(row=7, column=1)
+#ent_load_ref.delete(0, 'end')
+#ent_load_ref.insert(0, reffile)
 
 
 title1.grid(padx=(20,0), pady=(30,0), sticky=tk.W, row=0, column=1)

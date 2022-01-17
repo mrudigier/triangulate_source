@@ -23,7 +23,7 @@ class ResDisplay(tk.Frame):
     self.x_offset = self.c_width/2
     self.c_height = self.barheight*self.n_bars+2*self.padding
     self.bars=[]
-    self.scaling = self.x_offset/10
+    self.scaling = 1
     self.zeroLine = self.canvas.create_line(self.x_offset, self.padding,
                                             self.x_offset,
                                             self.c_height-self.padding,
@@ -77,11 +77,11 @@ class DiffBar:
 
   def update(self, canvas, xvalue:float):
     if xvalue>0:
-      self.value = min(10*xvalue, self.max_width)
-      self.value_scaled = min(100*xvalue, self.max_width)
+      self.value = min(xvalue, self.max_width)
+      self.value_scaled = min(10*xvalue, self.max_width)
     else:
-      self.value = max(10*xvalue, -self.max_width)
-      self.value_scaled = max(100*xvalue, -self.max_width)
+      self.value = max(xvalue, -self.max_width)
+      self.value_scaled = max(10*xvalue, -self.max_width)
     canvas.coords(self.fine_bar, self.xoffset+self.value_scaled,
                                  self.yoffset,
                                  self.xoffset,

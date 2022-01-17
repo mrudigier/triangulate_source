@@ -43,6 +43,10 @@ class ResCal():
     self.cal_ratio_inner = []
     self.cal_ratio_outer = []
 
+    self.dtof_inner = []
+    self.dtof_outer = []
+    self.c_air = 299.702547  # speed of light in air [mm/ns]
+
     self.source_pos = [0.0, 0.0, 0.0]
     print("Loading file ", posfile)
     self.loadDetPos(posfile)
@@ -144,8 +148,9 @@ class ResCal():
 
   def update (self, newPos:TypeCoordinate):
     self.source_pos = newPos.copy()
-    self.update_cal()
-    self.update_diff()
+    #self.update_cal()
+    #self.update_diff()
+    self.update_tof()
     print("Updated source pos. Current value: {}".format(self.source_pos))
 
   def get_res_inner(self):
@@ -185,3 +190,34 @@ class ResCal():
       return 0
     else:
       return abs(scalarprod/(length_a*length_b))
+
+
+  def update_tof () -> float:
+    dt = 0.0
+    self.dtof_inner.clear()
+    for i in range(0,6):
+      if (self.det_pos[12+i]!=[0,0,0] and self.det_pos[18+i]!=[0,0,0]):
+        dt = self.cal_distance(self.source_pos, self.det_pos[12+i]
+                               - self.source_pos, self.det_pos[18+i])/self.c_air
+        self.dtof_inner.append(dt)
+      else:
+        self.dtof_inner.append(0.0)
+
+    self.dtof_outer.clear()
+    for i in range(0,12):
+      if i < 6:
+        j = 30 + i
+      else:
+        j = 18 + i
+      if (self.det_pos[i]!=[0,0,0] and self.det_pos[j]!=[0,0,0]):
+        dt = self.cal_distance(self.source_pos, self.det_pos[i]
+                               - self.source_pos, self.det_pos[j])/self.c_air
+        self.dtof_outer.append(dt)
+      else:
+        self.dtof_outer.append(0.0)
+
+  def get_tof_inner():
+    return self.dtof_inner
+
+  def get_tof_outer():
+    return self.dtof_outer
