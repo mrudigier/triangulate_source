@@ -28,6 +28,14 @@ class ResDisplay(tk.Frame):
                                             self.x_offset,
                                             self.c_height-self.padding,
                                             width=5)
+    self.p100Line = self.canvas.create_line(self.x_offset+100, self.padding,
+                                            self.x_offset+100,
+                                            self.c_height-self.padding,
+                                            width=5)
+    self.m100Line = self.canvas.create_line(self.x_offset-100, self.padding,
+                                            self.x_offset-100,
+                                            self.c_height-self.padding,
+                                            width=5)
     self.rect = self.canvas.create_rectangle(self.padding, self.padding,
                                              self.c_width-self.padding,
                                              self.c_height-self.padding,
@@ -39,16 +47,21 @@ class ResDisplay(tk.Frame):
                                             self.x_offset-self.padding,
                                             self.barheight))
     self.canvas.tag_raise(self.zeroLine)
+    self.canvas.tag_raise(self.p100Line)
+    self.canvas.tag_raise(self.m100Line)
     self.canvas.tag_raise(self.rect)
 
   def update(self, dvalues:TypeVector):
     if len(dvalues)!=self.n_bars:
       print("WARNING: Encountered wrong number of bar chart values...")
+      print(len(dvalues), self.n_bars)
       return
     for i in range (0, self.n_bars):
       #print("      {}/{} -- {} scl {}".format(i, self.n_bars, dvalues[i], self.scaling))
       self.bars[i].update(self.canvas, dvalues[i]*self.scaling)
     self.canvas.tag_raise(self.zeroLine)
+    self.canvas.tag_raise(self.p100Line)
+    self.canvas.tag_raise(self.m100Line)
     self.canvas.tag_raise(self.rect)
 
 class DiffBar:
@@ -76,12 +89,15 @@ class DiffBar:
 
 
   def update(self, canvas, xvalue:float):
+    print("BAR {} VALUE: ".format(self.xoffset, xvalue))
     if xvalue>0:
-      self.value = min(xvalue, self.max_width)
-      self.value_scaled = min(10*xvalue, self.max_width)
+      self.value = min(xvalue/5., self.max_width)
+      #self.value_scaled = min(10*xvalue, self.max_width)
+      self.value_scaled = 0
     else:
-      self.value = max(xvalue, -self.max_width)
-      self.value_scaled = max(10*xvalue, -self.max_width)
+      self.value = max(xvalue/5., -self.max_width)
+      #self.value_scaled = max(10*xvalue, -self.max_width)
+      self.value_scaled = 0
     canvas.coords(self.fine_bar, self.xoffset+self.value_scaled,
                                  self.yoffset,
                                  self.xoffset,
