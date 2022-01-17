@@ -30,7 +30,7 @@ def update():
   rc.update([xpos.get(), ypos.get(), zpos.get()])
   # update the bar displays
   display1.update(rc.get_tof_inner())
-  display2.update(rc.get_res_outer())
+  display2.update(rc.get_tof_outer())
   # update the rms display
   rmsdisplay.update_labels(rc.get_rms(), xpos.get(), ypos.get(), zpos.get())
   #this is probably not necessary
@@ -122,7 +122,7 @@ lbl_Xval.grid(row=1, column=2)
 lbl_Yval.grid(row=2, column=2)
 lbl_Zval.grid(row=3, column=2)
 btn_reset_pos.grid(row=4, column=1)
-btn_load_best.grid(row=5, column=1)
+#btn_load_best.grid(row=5, column=1)
 #btn_load_ref.grid(pady=(30,0), row=6, column=1)
 #ent_load_ref.grid(row=7, column=1)
 #ent_load_ref.delete(0, 'end')
