@@ -14,17 +14,22 @@ class ResCal():
 
      update: method updates the source position (and thus the intensities)
      update_ref: update reference intensity ratios
-     get_res: returns two lists of intensity ratio differences of opposite
+     get_res: (inner/outer)
+              returns two lists of intensity ratio differences of opposite
               detectors (one for the inner ring and one for the outer rings)
               between calculated and reference intensity ratios.
               If a detector is missing or has intensity 0 in the ref list
               it will be ignored in the calculations and the difference value
               is set to zero.
+
+     get_rms: returns rms of the differences (can be used for
+                   optimisation)
  """
 
   def __init__(self, posfile:str, reffile:str):
     self.res_inner = []
     self.res_outer = []
+    self.mean_dev = 1000000000
 
     self.det_pos = []
     for i in range(0,36):
@@ -39,7 +44,7 @@ class ResCal():
     self.cal_ratio_outer = []
 
     self.source_pos = [0.0, 0.0, 0.0]
-
+    print("Loading file ", posfile)
     self.loadDetPos(posfile)
     self.loadRefIntensities(reffile)
 
@@ -47,7 +52,7 @@ class ResCal():
   def loadDetPos(self, posfile:str):
     with open(posfile, "r") as pf:
       for line in pf:
-         if len(line) == 0 or line[0] == '#':
+         if len(line) == 0 or line[0] == '#' or line[0] == '\n':
            continue
          content = line.split()
          if len(content) == 4:
@@ -57,24 +62,27 @@ class ResCal():
          else:
            print("ERROR reading file {}. Check formatting.".format(posfile))
            exit(1)
-    #print ("Reading detector positions from {}".format(posfile))
+    print ("Reading detector positions from {}".format(posfile))
     #for i,x in enumerate(self.det_pos):
     #  print(i, self.det_pos[i][0], self.det_pos[i][1], self.det_pos[i][2])
     self.update_cal()
 
   def loadRefIntensities(self, reffile:str):
+    self.ref_int = []
     for i in range(0,36):
       self.ref_int.append(0)
 
     with open(reffile, "r") as rf:
       for line in rf:
-         if len(line) == 0 or line[0] == '#':
+         if len(line) == 0 or line[0] == '#' or line[0] == '\n':
            continue
          content = line.split()
          if len(content) == 2:
+           print(line)
            self.ref_int[int(content[0])] = float(content[1])
          else:
-           print("ERROR reading file {}. Check formatting.".format(posfile))
+           print("line no good '{}'".format(line))
+           print("ERROR reading file {}. Check formatting.".format(reffile))
            exit(1)
     #print ("Reading reference intensities from {}".format(reffile))
     #for i,x in enumerate(self.ref_int):
@@ -111,7 +119,13 @@ class ResCal():
   def update_cal(self):
     self.cal_int.clear()
     for i in range(0,36):
-      self.cal_int.append(1/(self.cal_distance(self.source_pos, self.det_pos[i])**2))
+      # correct the intensity by a factor depending on the projected area
+      # of the detector (first order correction, not accounting for thickness
+      # or geometry of the detector.)
+      self.cal_int.append(self.cal_angle_corr(self.source_pos, self.det_pos[i])
+                      /(self.cal_distance(self.source_pos, self.det_pos[i])**2))
+      #self.cal_int.append(1/(self.cal_distance(self.source_pos, self.det_pos[i])**2))
+      #print("corrected: ", self.cal_angle_corr(self.source_pos, self.det_pos[i]))
     self.update_ratio(self.cal_int, self.cal_ratio_inner, self.cal_ratio_outer)
 
   def update_diff(self):
@@ -136,11 +150,38 @@ class ResCal():
 
   def get_res_inner(self):
     return self.res_inner
+
   def get_res_outer(self):
     return self.res_outer
+
+  def get_rms(self):
+    dev = 0
+    n=len(self.res_inner)
+    if (n>0):
+      for x in self.res_inner:
+        dev += x**2
+    n+=len(self.res_outer)
+    if (len(self.res_outer)>0):
+      for x in self.res_outer:
+        dev += x**2
+    if n>0:
+      return math.sqrt(dev/n)
+    else:
+      return 1000000000
 
   def cal_distance(self, sourcepos:TypeCoordinate, detpos:TypeCoordinate) -> float:
     xsqr = (sourcepos[0] - detpos[0])**2
     ysqr = (sourcepos[1] - detpos[1])**2
     zsqr = (sourcepos[2] - detpos[2])**2
     return math.sqrt(xsqr + ysqr + zsqr)
+
+  def cal_angle_corr(self, sourcepos:TypeCoordinate, detpos:TypeCoordinate) -> float:
+    scalarprod = ((detpos[0] - sourcepos[0])*detpos[0]
+                 + (detpos[1] - sourcepos[1])*detpos[1]
+                 + (detpos[2] - sourcepos[2])*detpos[2])
+    length_a = self.cal_distance([0,0,0], detpos)
+    length_b = self.cal_distance(sourcepos, detpos)
+    if( length_a == 0 or length_b == 0):
+      return 0
+    else:
+      return abs(scalarprod/(length_a*length_b))

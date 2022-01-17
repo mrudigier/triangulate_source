@@ -46,7 +46,7 @@ class ResDisplay(tk.Frame):
       print("WARNING: Encountered wrong number of bar chart values...")
       return
     for i in range (0, self.n_bars):
-      print("      {}/{} -- {} scl {}".format(i, self.n_bars, dvalues[i], self.scaling))
+      #print("      {}/{} -- {} scl {}".format(i, self.n_bars, dvalues[i], self.scaling))
       self.bars[i].update(self.canvas, dvalues[i]*self.scaling)
     self.canvas.tag_raise(self.zeroLine)
     self.canvas.tag_raise(self.rect)
